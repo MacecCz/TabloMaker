@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>TabloMaker</title>
+    <link rel="icon" type="image/png" sizes="128x128" href="icon.png?v=2">
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <!-- Levý panel -->
+      <aside class="panel">
+        <h1 class="panel__title">Nastavení cedule</h1>
+
+        <!-- Globální nastavení cedule -->
+        <section class="panel__section">
+          <h2 class="panel__subtitle">Cedule</h2>
+
+          <div class="field">
+            <div class="label">Počet sloupců (globálně)</div>
+            <div class="field field--inline">
+              <label class="radio radio--pill">
+                <input type="radio" name="columns" value="3" checked />
+                <span>3</span>
+              </label>
+              <label class="radio radio--pill">
+                <input type="radio" name="columns" value="4" />
+                <span>4</span>
+              </label>
+              <label class="check" title="Režim pro export do Trainz">
+                <input type="checkbox" id="trainzModeCheckbox" />
+                <span>Trainz režim</span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- Řady -->
+        <section class="panel__section">
+          <div class="panel__sectionHeader">
+            <h2 class="panel__subtitle">Řady</h2>
+            <button class="btn btn--primary" id="addRowBtn" type="button">
+              + Přidat
+            </button>
+          </div>
+
+          <div class="rowsList" id="rowsList"></div>
+        </section>
+
+        <!-- Edit vybrané řady -->
+        <section class="panel__section" id="rowEditorSection">
+          <h2 class="panel__subtitle">Edit řady</h2>
+
+          <div class="editorBox">
+            <div class="editorMeta" id="editorMeta">Vyber řadu</div>
+
+            <div class="field">
+              <div class="label">Typ řádku</div>
+              <select class="select" id="rowTypeSelect">
+                <option value="name">Název</option>
+                <option value="lines3">Linky 3 sloupce (1)</option>
+                <option value="lines4">Linky 4 sloupce (1)</option>
+                <option value="lines4_075">Linky 4 sloupce (0.75)</option>
+                <option value="info">Linková informace</option>
+                <option value="icons">Ikona</option>
+              </select>
+            </div>
+
+            <div class="editorSubBox" id="editorName">
+              <div class="field">
+                <div class="label">Rozložení textu</div>
+                <select class="select" id="nameLayoutSelect">
+                  <option value="one075">1 řádek (0.75)</option>
+                  <option value="one">1 řádek (1)</option>
+                  <option value="one15">1 řádek (1.5)</option>
+                  <option value="two15">2 řádky (1.5)</option>
+                  <option value="two2">2 řádky (2)</option>
+                  <option value="three">3 řádky (2)</option>
+                </select>
+              </div>
+
+              <div class="field isHidden" id="nameSizeField">
+                <div class="label">Velikost písma</div>
+                <div class="field field--inline">
+                  <label class="radio radio--pill">
+                    <input type="radio" name="nameSize" value="140" />
+                    <span>140pt</span>
+                  </label>
+                  <label class="radio radio--pill">
+                    <input type="radio" name="nameSize" value="115" />
+                    <span>115pt</span>
+                  </label>
+                  <label class="check">
+                    <input type="checkbox" id="nameOutageCheckbox" />
+                    <span>Výluka</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="label">Horní řádek</div>
+                <input
+                  class="input"
+                  id="nameLine1Input"
+                  type="text"
+                  placeholder="např. NÁZEV"
+                  autocomplete="off"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                />
+              </div>
+
+              <div class="field isHidden" id="nameLine2Field">
+                <div class="label">Spodní řádek</div>
+                <input
+                  class="input"
+                  id="nameLine2Input"
+                  type="text"
+                  placeholder="např. ZASTÁVKA"
+                  autocomplete="off"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                />
+              </div>
+
+              <div class="field isHidden" id="nameLine3Field">
+                <div class="label">Třetí řádek</div>
+                <input
+                  class="input"
+                  id="nameLine3Input"
+                  type="text"
+                  placeholder="např. DODATEK"
+                  autocomplete="off"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                />
+              </div>
+            </div>
+
+            <!-- Editor pro typ: Linková informace -->
+            <div class="editorSubBox isHidden" id="editorInfo">
+              <div class="field">
+                <div class="label">Typ informace</div>
+                <select class="select" id="infoTypeSelect"></select>
+              </div>
+              <div class="field isHidden" id="infoTextField">
+                <div class="label">Text</div>
+                <input
+                  class="input"
+                  id="infoTextInput"
+                  type="text"
+                  value=""
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+              </div>
+              <div class="field isHidden" id="infoIconsField">
+                <div class="labelRow">
+                  <div class="label">Ikony</div>
+                  <button type="button" class="btn" id="infoIconsAddBtn">
+                    Přidat
+                  </button>
+                </div>
+
+                <div class="hint">Max. 3 ikony</div>
+                <div id="infoIconsList" class="iconsList"></div>
+              </div>
+            </div>
+
+            <!-- Editor pro typ: Linky -->
+            <div class="editorSubBox" id="editorLines">
+              <div class="label">Buňky (sloupce)</div>
+              <div class="cellsEditor" id="cellsEditor"></div>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <!-- Pravý panel -->
+      <main class="preview">
+        <div class="preview__header">
+          <div class="preview__headText">
+            <div class="preview__title">Náhled</div>
+            <div class="preview__note">
+              Rozměry pro tisk zůstávají v mm, náhled se jen škáluje.
+            </div>
+            <div class="preview__meta" id="signHeightInfo">
+              Výška cedule: – řádků
+            </div>
+          </div>
+
+          <div class="preview__controls">
+            <button
+              class="btn btn--sm isHidden"
+              id="exportJpgTrsBtn"
+              type="button"
+              title="Uložit jako JPG (Trainz)"
+            >
+              Uložit JPG (Trs)
+            </button>
+            <button
+              class="btn btn--sm"
+              id="exportJpgBtn"
+              type="button"
+              title="Uložit jako JPG"
+            >
+              Uložit JPG
+            </button>
+            <button
+              class="btn btn--sm"
+              id="exportPdfBtn"
+              type="button"
+              title="Uložit jako PDF"
+            >
+              Uložit PDF
+            </button>
+            <button
+              class="btn btn--sm"
+              id="zoomOutBtn"
+              type="button"
+              title="Zmenšit"
+            >
+              –
+            </button>
+            <button
+              class="btn btn--sm"
+              id="zoomResetBtn"
+              type="button"
+              title="Reset zoomu"
+            >
+              100%
+            </button>
+            <button
+              class="btn btn--sm"
+              id="zoomInBtn"
+              type="button"
+              title="Zvětšit"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div class="preview-viewport" id="previewViewport">
+          <div class="preview-stage" id="previewStage">
+            <div class="preview-content" id="previewContent">
+              <!-- bílý okraj kolem celé cedule (tisk/export) -->
+              <div class="signFrame" id="signFrame">
+                <div class="sign" id="sign">
+                  <!-- řady se generují JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="./rules.js" defer></script>
+    <script
+      src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"
+      defer
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"
+      defer
+    ></script>
+    <script src="./export.js" defer></script>
+    <script src="./main.js" defer></script>
+  </body>
+</html>
